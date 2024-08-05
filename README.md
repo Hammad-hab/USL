@@ -1,13 +1,4 @@
-```
-
-```
-
-<div>
-    <center>
-        <h3>USL</h3>
-        Unified Shader Language
-    </center>
-</div>
+# Unified Shader Language (USL)
 
 **USL** is a high-performance shader transpiler written in the Mojo programming language, designed to unify various shader languages into a single cohesive language. With USL, developers can write shaders in a standardized language and deploy them seamlessly across multiple platforms and graphics engines. The primary goal is to facilitate a smooth transition from WebGL to WebGPU.
 
