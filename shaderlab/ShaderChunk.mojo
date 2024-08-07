@@ -1,4 +1,4 @@
-from utils_methods import btos
+from .libutils.utils_methods import btos
 
 struct USLShaderChunk:
     var structure : String

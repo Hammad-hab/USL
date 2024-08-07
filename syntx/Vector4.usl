@@ -1,0 +1,17 @@
+class Color inherits Vector4 {
+    static toVector(hex: Number) {
+        return __compfn("HexTDecimalTVec4", hex)
+    }
+}
+
+shader GEOMETRY Phong {
+    # implement Phong Shader
+}
+
+shader Fragment Phong {
+    # implement Phong Shader
+}
+
+shader Vertex Phong {
+    # implement Phong Shader
+}
