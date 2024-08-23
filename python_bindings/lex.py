@@ -78,8 +78,12 @@ class Lexer:
 
 def lex(text):
     lexer = Lexer(text)
+    raise Exception("1:Hi")
     tokens = lexer.tokenize()
     return tokens
+
+def exit_():
+    exit(-1)
 
 # Example usage
 if __name__ == "__main__":

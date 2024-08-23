@@ -15,7 +15,7 @@ struct Token(CollectionElement):
     var type : String
     var value : String
 
-    @deprecated("from_PythonObject is a really unsafe function, will be removed soon")
+    # @deprecated("from_PythonObject is a really unsafe function, will be removed soon")
     @staticmethod
     fn from_PythonObject(object: PythonObject) raises -> Token:
         try:

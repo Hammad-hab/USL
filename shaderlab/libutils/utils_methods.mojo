@@ -66,3 +66,19 @@ fn isAlphanum(string: String) -> String:
         return True
     else:
         return False
+
+fn repeatStr(string: String, ntimes:Int) -> String:
+    var new_string: String = ""
+    for i in range(ntimes):
+        new_string += string
+    return new_string
+
+fn errorToString(error: Error) -> Tuple[Int, String]:
+    try: 
+        var arr = error._message().split(":")
+        return Tuple(int(arr[0]), arr[1])
+    except e:
+        print("USL TRACEBACK FAILURE CRITICAL. CANNOT RETAIN ERROR FROM LEXER")
+        var a: String= "USL TRACEBACK FAILURE CRITICAL. CANNOT RETAIN ERROR FROM LEXER"
+        return (0, a)
+    ...
