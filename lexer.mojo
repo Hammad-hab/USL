@@ -33,5 +33,5 @@ fn LexicalAnalyzer(Program: ProgramSource) raises -> List[Token]:
         ProgramSource.throw(Program, error_line, error_string)
         return List[Token]()
 
-fn main() raises:
-    LexicalAnalyzer()
+# fn main() raises:
+#     LexicalAnalyzer()
