@@ -1,7 +1,14 @@
 
 fn is_reserved(keyword:String) -> Bool:
-    var reserved: List[String] = List[String](str('fn'), str('var'))
+    var reserved: List[String] = List[String]('fn', 'var', 'VERTEX', 'FRAGMENT', 'Shaderbind')
     if keyword in reserved:
+        return True
+    else:
+        return False
+
+fn is_construct(keyword:String) -> Bool:
+    var reserved_constructs = List[String]('Shaderbind')
+    if keyword in reserved_constructs:
         return True
     else:
         return False

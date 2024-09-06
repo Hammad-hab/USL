@@ -11,6 +11,7 @@ struct ProgramSource:
         self.shader = shader.strip()
         self.shaderSourceArray = shader.strip().split("\n")
         self.programDidError = False
+        
 
     fn __copyinit__(inout self, existing: Self):
         self.shader = existing.shader
@@ -29,4 +30,17 @@ struct ProgramSource:
         if (self.shaderSourceArray[line + 1]):
             string += '\t|' + str(line + 2) + "|" + self.shaderSourceArray[line + 1] + "\n"
         print("\x1b[31mTranspilation Failed, Line: " + str(line + 1) + ":\n" + string + "\nWith Error: \n\t╰→ " + errorMsg + "\x1b[0m")
+        ...
+
+    def warn(self:ProgramSource,  line:Int, errorMsg:String) -> None:
+        line -= 1
+        self.programDidError = True
+        var string : String = ""
+        if (self.shaderSourceArray[line - 1]):
+            string += "\t|" + str(line) + "|" + self.shaderSourceArray[line - 1] + "\n"
+        var error = "\t\b→|" + str(line + 1) + "|" + self.shaderSourceArray[line] + "\n"
+        string += error + "\t" + "|" + repeatStr("*", len("|" + str(line+1) + "|") - 2) + "|" + repeatStr("^", len(error) - len("|" + str(line+1) + "|") - 2) + "\n"
+        if (self.shaderSourceArray[line + 1]):
+            string += '\t|' + str(line + 2) + "|" + self.shaderSourceArray[line + 1] + "\n"
+        print("\x1b[33mTranspilation Raised Warning, Line: " + str(line + 1) + ":\n" + string + "\nWith Warning: \n\t╰→ " + errorMsg + "\x1b[0m")
         ...

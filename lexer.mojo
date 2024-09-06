@@ -43,7 +43,8 @@ fn main() raises:
     fn smome_fn (Int s, Matrix4D X) {
         x
     }
+    @Shaderbind VERTEX hi
     """)
     var tks = LexicalAnalyzer(prgm)
     var prs = SyntacticAnalysis(tks, prgm)
-    pprint(prs[1])
+    pprint(prs[0])

@@ -7,7 +7,9 @@ fn SyntacticAnalysis(tokens: List[Token], Program: ProgramSource) raises -> List
     """
         This is an implementation of a Parser/Syntactic analyser.
         It is built purely in mojo and has various measures to ensure
-        that the syntax is correct (unlike croton).
+        that the syntax is correct (unlike croton). 
+        There are countless checks to ensure that strange and/or weird
+        code doesn't make it to the actual transpiler.
 
 
         Takes in a ProgramSource (See ExceptionTracer.mojo) object and a list of tokens (See lexer.mojo)
@@ -20,10 +22,35 @@ fn SyntacticAnalysis(tokens: List[Token], Program: ProgramSource) raises -> List
     while read_head < len(tokens) and not hasErrored:
         var token = tokens[read_head]
 
+        if token.type == 'CONSTRUCT':
+           var construct_name = tokens[read_head + 1]
+           if construct_name.value != 'Shaderbind':
+                ProgramSource.throw(Program, token.line + 1, 'Reference to unknown construct @' + construct_name.value)
+                hasErrored = True
+                break
+           var argument_0 = tokens[read_head + 2]
+           var argument_1 = tokens[read_head + 3]
+
+           if argument_0.value != 'VERTEX'and argument_0.value != 'FRAGMENT':
+                ProgramSource.throw(Program, argument_0.line + 1, 'Attempt to bind shader functions to unknown shader type ' + argument_0.value)
+                hasErrored = True
+                break
+
+
+           read_head += 4
+           var operation = ShaderOperationVar(List[Token](construct_name, argument_0, argument_1), 'SHADERBIND', List[Token](), 'CONSTRUCT')
+           operations.append(operation)
+           continue
+
         if token.type == 'LEFT_BRACE_CUR' or token.type == 'RIGHT_BRACE_CUR':
             ProgramSource.throw(Program, token.line + 1, 'Illegal use of token "' + token.value + '" at an unexpected place')
             hasErrored = True
             break
+
+        if token.type == 'NAME' and not is_reserved(token.value):
+            ProgramSource.warn(Program, token.line + 1, 'Unused and unexpected token "' + token.value + '". Such phantom entries can cause problems in transpilation.')
+            read_head += 1
+            continue
 
         if (token.type == 'NAME' and token.value == 'var'):
             var var_name = tokens[read_head + 1]
@@ -99,7 +126,9 @@ fn SyntacticAnalysis(tokens: List[Token], Program: ProgramSource) raises -> List
             operations.append(operation)
             continue
         
-        read_head += 1
+        ProgramSource.throw(Program, 0, 'SNAFU: Unrecognised token found. Kindly report at https://github.com/Hammad-hab/USL/issues with code sample')
+        hasErrored = True
+        break
     
     if hasErrored:
         print('\x1b[31mExiting Program at Parser due to the above error\n')
