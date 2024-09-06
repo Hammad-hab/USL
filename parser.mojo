@@ -1,5 +1,6 @@
 from ExceptionTracer import ProgramSource
 from shaderlab import Token, ShaderOperationVar
+from shaderlab import is_reserved
 
 
 fn SyntacticAnalysis(tokens: List[Token], Program: ProgramSource) raises -> List[ShaderOperationVar]:
@@ -18,8 +19,19 @@ fn SyntacticAnalysis(tokens: List[Token], Program: ProgramSource) raises -> List
     var operations: List[ShaderOperationVar] = List[ShaderOperationVar]()
     while read_head < len(tokens) and not hasErrored:
         var token = tokens[read_head]
+
+        if token.type == 'LEFT_BRACE_CUR' or token.type == 'RIGHT_BRACE_CUR':
+            ProgramSource.throw(Program, token.line + 1, 'Illegal use of token "' + token.value + '" at an unexpected place')
+            hasErrored = True
+            break
+
         if (token.type == 'NAME' and token.value == 'var'):
             var var_name = tokens[read_head + 1]
+            if is_reserved(var_name.value):
+                ProgramSource.throw(Program, var_name.line + 1, 'Illegal use of reserved keyword ' + var_name.value)
+                hasErrored = True
+                break
+                
             read_head += 3
             var value = tokens[read_head]
             read_head += 1
@@ -30,6 +42,12 @@ fn SyntacticAnalysis(tokens: List[Token], Program: ProgramSource) raises -> List
         
         if (token.type == 'NAME' and token.value == 'fn'):
             var fn_name = tokens[read_head + 1]
+
+            if is_reserved(fn_name.value):
+                ProgramSource.throw(Program, fn_name.line + 1, 'Illegal use of reserved keyword ' + fn_name.value)
+                hasErrored = True
+                break
+
             if fn_name.type != 'NAME':
                 ProgramSource.throw(Program, fn_name.line + 1, 'Syntax Error: Function name missing after declaration')
                 hasErrored = True
@@ -52,10 +70,10 @@ fn SyntacticAnalysis(tokens: List[Token], Program: ProgramSource) raises -> List
                     hasErrored = True
                     break
                 
+
                 if tk.type == 'SYMB_COMA': 
-                    ProgramSource.throw(Program, tk.line + 1, 'Syntax Error: Got unexpected token "," (SYMB_COMA) in arguments.')
-                    hasErrored = True
-                    break
+                    read_head += 1
+                    continue
                 
                 args.append(tk)
                 read_head += 1
@@ -84,8 +102,8 @@ fn SyntacticAnalysis(tokens: List[Token], Program: ProgramSource) raises -> List
         read_head += 1
     
     if hasErrored:
-        print('\x1b[31mExiting Program at Parser due to the above error')
-        raise Error('\x1b[0m')
+        print('\x1b[31mExiting Program at Parser due to the above error\n')
+        raise Error('ProgramSource breakage')
         #    var contents: List[Token] = List[Token]()
         #    while value.value != '=':
         #          contents.append(value)

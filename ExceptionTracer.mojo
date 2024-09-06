@@ -1,6 +1,7 @@
 from shaderlab import repeatStr
 import sys
 
+
 struct ProgramSource:
     var shader: String
     var shaderSourceArray: List[String]

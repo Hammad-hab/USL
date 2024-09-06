@@ -1,3 +1,11 @@
+
+fn is_reserved(keyword:String) -> Bool:
+    var reserved: List[String] = List[String](str('fn'), str('var'))
+    if keyword in reserved:
+        return True
+    else:
+        return False
+
 @value
 struct TokenBasedString:
     var value: String

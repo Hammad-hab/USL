@@ -39,8 +39,8 @@ fn LexicalAnalyzer(Program: ProgramSource) raises -> List[Token]:
 
 fn main() raises:
     var prgm = ProgramSource("""
-    var x = 0
-    fn smome_fn (numbr U Matrix4D X) {
+    var l = 0
+    fn smome_fn (Int s, Matrix4D X) {
         x
     }
     """)
