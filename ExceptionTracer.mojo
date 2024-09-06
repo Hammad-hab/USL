@@ -4,15 +4,22 @@ import sys
 struct ProgramSource:
     var shader: String
     var shaderSourceArray: List[String]
+    var programDidError: Bool
 
-    def __init__(inout self, shader:String):
+    fn __init__(inout self, shader:String) raises:
         self.shader = shader.strip()
         self.shaderSourceArray = shader.strip().split("\n")
+        self.programDidError = False
 
-        
+    fn __copyinit__(inout self, existing: Self):
+        self.shader = existing.shader
+        self.shaderSourceArray = existing.shaderSourceArray
+        self.programDidError = existing.programDidError
+
     @staticmethod
     def throw(self:ProgramSource,  line:Int, errorMsg:String) -> None:
         line -= 1
+        self.programDidError = True
         var string : String = ""
         if (self.shaderSourceArray[line - 1]):
             string += "\t|" + str(line) + "|" + self.shaderSourceArray[line - 1] + "\n"
@@ -21,5 +28,4 @@ struct ProgramSource:
         if (self.shaderSourceArray[line + 1]):
             string += '\t|' + str(line + 2) + "|" + self.shaderSourceArray[line + 1] + "\n"
         print("\x1b[31mTranspilation Failed, Line: " + str(line + 1) + ":\n" + string + "\nWith Error: \n\t╰→ " + errorMsg + "\x1b[0m")
-        sys.exit()
         ...

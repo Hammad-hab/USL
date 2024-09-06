@@ -1,0 +1,2 @@
+__ifcomp__fnbind hexToColor compl__hexToColor
+__ifcomp__fnbind rgbToNorm compl__rgbToNorm

@@ -1,6 +1,7 @@
 from python import Python
-from shaderlab import Token, errorToString
+from shaderlab import Token, errorToString, pprint, ShaderOperationVar
 from ExceptionTracer import ProgramSource
+from parser import SyntacticAnalysis
 from sys import exit
 
 fn LexicalAnalyzer(Program: ProgramSource) raises -> List[Token]:
@@ -18,10 +19,13 @@ fn LexicalAnalyzer(Program: ProgramSource) raises -> List[Token]:
         See ExceptionTracer.mojo
     """
     try:
+        var list_rsult = List[Token]()
+        if Program.programDidError:
+            print('\x1b[31mExiting Program at Lexer due to the above error\x1b[0m')
+            return list_rsult
         Python.add_to_path("./python_bindings")
         var module = Python.import_module("lex")
         var lex_result = module.lex(Program.shader)
-        var list_rsult = List[Token]()
         for result in lex_result:
             list_rsult.append(Token.from_PythonObject(result))
         return list_rsult
@@ -33,5 +37,13 @@ fn LexicalAnalyzer(Program: ProgramSource) raises -> List[Token]:
         ProgramSource.throw(Program, error_line, error_string)
         return List[Token]()
 
-# fn main() raises:
-#     LexicalAnalyzer()
+fn main() raises:
+    var prgm = ProgramSource("""
+    var x = 0
+    fn smome_fn (numbr U Matrix4D X) {
+        x
+    }
+    """)
+    var tks = LexicalAnalyzer(prgm)
+    var prs = SyntacticAnalysis(tks, prgm)
+    pprint(prs[1])
