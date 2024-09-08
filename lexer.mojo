@@ -1,7 +1,6 @@
 from python import Python
 from shaderlab import Token, errorToString, pprint, ShaderOperationVar
 from ExceptionTracer import ProgramSource
-from parser import SyntacticAnalysis
 from sys import exit
 
 fn LexicalAnalyzer(Program: ProgramSource) raises -> List[Token]:
@@ -25,7 +24,9 @@ fn LexicalAnalyzer(Program: ProgramSource) raises -> List[Token]:
             return list_rsult
         Python.add_to_path("./python_bindings")
         var module = Python.import_module("lex")
+        var libprs = Python.import_module('parser')
         var lex_result = module.lex(Program.shader)
+        var prs_result = libprs.SyntacticAnalysis(lex_result)
         for result in lex_result:
             list_rsult.append(Token.from_PythonObject(result))
         return list_rsult
@@ -39,12 +40,6 @@ fn LexicalAnalyzer(Program: ProgramSource) raises -> List[Token]:
 
 fn main() raises:
     var prgm = ProgramSource("""
-    var l = 0
-    fn smome_fn (Int s, Matrix4D X) {
-        x
-    }
-    @Shaderbind VERTEX hi
+    var l = 10.20
     """)
     var tks = LexicalAnalyzer(prgm)
-    var prs = SyntacticAnalysis(tks, prgm)
-    pprint(prs[0])

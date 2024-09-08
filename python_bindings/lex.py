@@ -1,4 +1,5 @@
 import re
+from parser import SyntacticAnalysis
 
 class Token:
     def __init__(self, type, value, line):
@@ -106,8 +107,5 @@ def exit_():
 
 if __name__ == '__main__':
     lex("""
-    var x = 0
-    fn vertex_shader () {
-        x
-    }
+    var l = 0
     """)

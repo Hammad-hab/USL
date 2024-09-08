@@ -40,6 +40,19 @@ struct Token(CollectionElement):
             print("Invalid Object, it is incomplete and incompatible with Token Class")
             raise
         ...
+
+    @staticmethod
+    fn to_PythonObject(object: Token) raises -> PythonObject:
+        try:
+            var obj = PythonObject()
+            obj.type = object.type
+            obj.value = object.value
+            obj.line = object.line
+            return obj
+        except:
+            print("Invalid Token, it is incomplete and incompatible with PythonObject Class " + object.type)
+            raise
+        ...
     
     fn __copyinit__(inout self, existing: Self):
         self.value = existing.value
