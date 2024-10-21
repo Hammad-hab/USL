@@ -1,3 +1,4 @@
+from python import PythonObject
 
 fn is_reserved(keyword:String) -> Bool:
     var reserved: List[String] = List[String]('fn', 'var', 'VERTEX', 'FRAGMENT', 'Shaderbind')
@@ -25,7 +26,6 @@ struct TokenBasedNumber:
     var type: String
 
     
-
 struct Token(CollectionElement):
     var type : String
     var value : String
@@ -35,7 +35,7 @@ struct Token(CollectionElement):
     @staticmethod
     fn from_PythonObject(object: PythonObject) raises -> Token:
         try:
-            return Token(object.type, object.value, object.line)
+            return Token(str(object.type), str(object.value), object.line)
         except:
             print("Invalid Object, it is incomplete and incompatible with Token Class")
             raise
@@ -79,20 +79,3 @@ struct Token(CollectionElement):
 trait PPrintable:
     fn repr(inout self) -> String:...
 
-
-@value
-struct ShaderOperationVar(PPrintable):
-    var tokens: List[Token]
-    var name: String
-    var arguments: List[Token]
-    var type: String
-
-    fn getName(inout self) -> String:
-        return self.name
-    
-    fn setName(inout self, name:String) :
-        self.name = name
-   
-
-    fn repr(inout self) -> String:
-       return 'ShaderOperationVar(name=' + self.name + ', type=' + self.type + ')'

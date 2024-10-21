@@ -1,5 +1,4 @@
-from ShaderChunk import USLShaderChunk
-from utils_methods import btos
+from shaderlab import USLShaderChunk, btos
 fn main():
     print("Running Test: ShaderChunk.test\n")
     var chunk = USLShaderChunk()

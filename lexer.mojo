@@ -1,9 +1,10 @@
-from python import Python
-from shaderlab import Token, errorToString, pprint, ShaderOperationVar
+from python import Python, PythonObject
+from shaderlab import Token, errorToString, pprint, USLFunctionShader, USLShaderChunk, USLVariableShader
 from ExceptionTracer import ProgramSource
 from sys import exit
 
-fn LexicalAnalyzer(Program: ProgramSource) raises -> List[Token]:
+
+fn LexicalSyntacticAnalyser(Program: ProgramSource) raises -> PythonObject:
     """
         This is a crude implementation of a Lexer/Tokenizer.
         It is built primarily in Python and has been bridged
@@ -18,28 +19,39 @@ fn LexicalAnalyzer(Program: ProgramSource) raises -> List[Token]:
         See ExceptionTracer.mojo
     """
     try:
-        var list_rsult = List[Token]()
         if Program.programDidError:
             print('\x1b[31mExiting Program at Lexer due to the above error\x1b[0m')
-            return list_rsult
+            return PythonObject()
+
         Python.add_to_path("./python_bindings")
         var module = Python.import_module("lex")
         var libprs = Python.import_module('parser')
         var lex_result = module.lex(Program.shader)
         var prs_result = libprs.SyntacticAnalysis(lex_result)
-        for result in lex_result:
-            list_rsult.append(Token.from_PythonObject(result))
-        return list_rsult
+
+        return prs_result
     except e:
         var error_comp = errorToString(e)
         var error_line = error_comp[0]
 
         var error_string = error_comp[1]
         ProgramSource.throw(Program, error_line, error_string)
-        return List[Token]()
+        return PythonObject()
 
 fn main() raises:
     var prgm = ProgramSource("""
     var l = 10.20
+    var n = 3
+    fn Supacool() {
+        x()
+        
+    }
     """)
-    var tks = LexicalAnalyzer(prgm)
+    var tks = LexicalSyntacticAnalyser(prgm)
+    var program = USLShaderChunk()
+    program.defineShaderStructure("")
+    
+    
+
+    
+    print(program.getStructure())

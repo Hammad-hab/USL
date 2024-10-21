@@ -32,14 +32,28 @@ def SyntacticAnalysis(tokens: list[Token]):
     while read_head < len(tokens) and not hasErrored:
         token = tokens[read_head]
 
+        if tokens[read_head].type == 'NAME' and tokens[read_head + 1].value == '(':
+            fn_name = tokens[read_head]
+            args = []
+            read_head += 2
+            
+            while tokens[read_head].value != ')':
+                args.append(tokens[read_head])
+                read_head += 1
+            
+            args = SyntacticAnalysis(args)
+            operations.append({'type': 'CallExperession', 'line': fn_name.line, 'args': args, 'name': fn_name})
+            read_head += 1
+            continue
+        
         if token.type == 'Number':
-            operations.append({'type': 'Number', 'value': token.value, 'line': token.line})
+            operations.append({'type': 'NumberFloat' if '.' in token.value else 'NumberInt', 'value': token.value, 'line': token.line})
             read_head += 1
             continue
 
         if token.type == 'CONSTRUCT':
             construct_name = tokens[read_head + 1]
-            if construct_name.value != 'Shaderbind':
+            if construct_name.value != 'Shaderbind' or construct_name.value != 'ShareData':
                 raise Exception(f'{construct_name.line + 1}: Reference to unknown construct @{construct_name.value}')
             argument_0 = tokens[read_head + 2]
             argument_1 = tokens[read_head + 3]
@@ -123,5 +137,4 @@ def SyntacticAnalysis(tokens: list[Token]):
         
         raise Exception(f'0: SNAFU: Unrecognised token found {token}. Kindly report at https://github.com/Hammad-hab/USL/issues with code sample')
     
-
     return operations
