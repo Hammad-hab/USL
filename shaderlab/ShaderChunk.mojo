@@ -1,6 +1,6 @@
 from .libutils.utils_methods import btos
 
-struct USLShaderChunk:
+struct USLShaderChunk(Copyable):
     var structure : String
     var isGLSL: Bool
     var isHLSL: Bool
@@ -14,6 +14,15 @@ struct USLShaderChunk:
         self.isWSGL = False
         self.structure = "NULL"
         self.isCompiled = False
+    
+    fn __copyinit__(inout self, copied: Self):
+        self.structure = copied.structure
+        self.isGLSL = copied.isGLSL
+        self.isHLSL = copied.isHLSL
+        self.isWSGL = copied.isWSGL
+        self.isCompiled = copied.isCompiled
+        
+
 
     fn defineShaderStructure(inout self, owned shaderStructure:String):
         """
@@ -61,6 +70,8 @@ struct USLShaderChunk:
 
 
     fn superDangerousAppend(inout self, owned append: String):
+        if self.structure == 'NULL':
+            self.structure = ''
         self.structure += append + ';\n'
 
     fn superDangerousPrepend(inout self, owned prepend: String):

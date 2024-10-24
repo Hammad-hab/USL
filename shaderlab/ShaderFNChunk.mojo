@@ -9,7 +9,7 @@ struct USLFunctionShader:
         self.bakus_naur = USLShaderChunk()
 
         self.bakus_naur.setShaderTypeGLSL()
-        self.bakus_naur.defineShaderStructure("<ret_type> <fn_name>(<args[]>) {<code>}")
+        self.bakus_naur.defineShaderStructure("<ret_type> <fn_name>(<args[]>) {\n\t<code>\n}")
         self.bakus_naur.insertBakusNaurTag('fn_name', self.fn_name)
 
     fn add_argument(inout self, arg_type: String, arg_val: String):
@@ -19,7 +19,7 @@ struct USLFunctionShader:
         if not code_chunk.isCompiled:
             raise Error('Error at USLFunctionShader.add_chunk, provided chunk is unsafe. afterCompileSafety has not been called.')
         else:
-            self.bakus_naur.insertBakusNaurTag('code', code_chunk.structure + '<code>')
+            self.bakus_naur.insertBakusNaurTag('code', code_chunk.structure + '\t<code>\n')
     
     fn add_code(inout self, borrowed code_block: String):
         self.bakus_naur.insertBakusNaurTag('code', code_block + '<code>')

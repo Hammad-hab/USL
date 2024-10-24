@@ -30,6 +30,7 @@ struct ProgramSource:
         if (self.shaderSourceArray[line + 1]):
             string += '\t|' + str(line + 2) + "|" + self.shaderSourceArray[line + 1] + "\n"
         print("\x1b[31mTranspilation Failed, Line: " + str(line + 1) + ":\n" + string + "\nWith Error: \n\t╰→ " + errorMsg + "\x1b[0m")
+        raise Error('Exiting Transpiler due to above error.')
         ...
 
     def warn(self:ProgramSource,  line:Int, errorMsg:String) -> None:

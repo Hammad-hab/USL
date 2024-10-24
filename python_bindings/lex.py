@@ -107,5 +107,12 @@ def exit_():
 
 if __name__ == '__main__':
     lex("""
-    var l = 0
+       var l = 10.20
+        var n = 3
+        fn Supacool() {
+            var hey = 10
+            fn hia() {
+                var x = 9
+            }
+        }
     """)

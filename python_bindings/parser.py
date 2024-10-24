@@ -83,7 +83,7 @@ def SyntacticAnalysis(tokens: list[Token]):
             read_head += 3
             value = SyntacticAnalysis(tokens[read_head:])[0]
             read_head += 1
-            operation = {'type': 'VariableDeclaration', 'name': var_name.value, 'value': value}
+            operation = {'type': 'VariableDeclaration', 'name': var_name.value, 'value': value, 'line': var_name.line}
             operations.append(operation)
             continue
         
@@ -122,16 +122,17 @@ def SyntacticAnalysis(tokens: list[Token]):
             if tokens[read_head - 1].value != '{':
                 raise Exception(f'{tokens[read_head - 1].line + 1}: Syntax Error: Missing "\x7B" after function declaration')
             
-            while tokens[read_head].value != '}':
+            while read_head < len(tokens) and tokens[read_head].value != '}' :
                 contents.append(tokens[read_head]) 
                 read_head += 1
-            
+            else:
+                read_head += 1
             
             if len(args) % 2 == 1:
                 raise Exception(f'{args[-1].line + 1}: Syntax Error: Missing Type for Argument {args[-1].value}')
             
             read_head += 1
-            operation = {'type': 'FunctionDeclaration', 'name': fn_name.value, 'args': args, 'body': SyntacticAnalysis(contents)}
+            operation = {'type': 'FunctionDeclaration', 'name': fn_name.value, 'args': args, 'body': SyntacticAnalysis(contents), 'line': fn_name.line}
             operations.append(operation)
             continue
         

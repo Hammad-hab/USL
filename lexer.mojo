@@ -1,6 +1,7 @@
 from python import Python, PythonObject
 from shaderlab import Token, errorToString, pprint, USLFunctionShader, USLShaderChunk, USLVariableShader
-from ExceptionTracer import ProgramSource
+from shaderlab.ExceptionTracer import ProgramSource
+from shaderlab.libglsl.libglsl_gen import libglsl_gen
 from sys import exit
 
 
@@ -43,15 +44,12 @@ fn main() raises:
     var l = 10.20
     var n = 3
     fn Supacool() {
-        x()
-        
+        var hey = 10
+        fn hia() {
+            var x = 9
+        }
     }
     """)
     var tks = LexicalSyntacticAnalyser(prgm)
-    var program = USLShaderChunk()
-    program.defineShaderStructure("")
-    
-    
-
-    
-    print(program.getStructure())
+    var structura = libglsl_gen(tks, False, prgm)
+    print(structura.getStructure())
