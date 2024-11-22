@@ -9,5 +9,3 @@
                          lib<shader_language_name>_gen.mojo file containing a function that takes an AST and generates
                          the sourcecode of it's respective shader language
 """
-
-from .libglsl_gen import *

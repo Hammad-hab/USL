@@ -1,6 +1,8 @@
 from python import Python, PythonObject
 from shaderlab import errorToString, pprint
-from shaderlab import ProgramSource, libglsl_gen
+from shaderlab import ProgramSource
+from shaderlab.libglsl.libglsl_gen import libglsl_gen
+from shaderlab.shader_bind import ShaderBind
 from sys import exit
 
 
@@ -42,13 +44,21 @@ fn LexicalSyntacticAnalyser(Program: ProgramSource,) raises -> PythonObject:
 
 fn main() raises:
     var prgm = ProgramSource("""
-        var x: f32 = 10
+        @Shaderbind VERTEX main
+        @Shaderbind FRAGMENT main
 
-        fn main() {
-            
+        fn v(): float32 {
+            # Implementation excluded due to size
         }
+
+
+        fn main(): ShaderOutput {
+            
+            var x:float32 = v(z())  
+        }
+        
     """)
     var tks = LexicalSyntacticAnalyser(prgm)
-    # ShaderBind(tks, prgm)
+    ShaderBind(tks, prgm)
     # var structura = libglsl_gen(tks, False, prgm)
     # print(structura.getStructure())

@@ -31,6 +31,8 @@ fn libglsl_gen(tokens: PythonObject, is_nested:Bool, prgm: ProgramSource) raises
             program.superDangerousAppend(ffn.structure.getStructure())
 
         
+
+        
     
     program.afterCompileSafety()
     return program

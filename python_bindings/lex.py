@@ -109,6 +109,7 @@ def exit_():
 
 if __name__ == '__main__':
     SyntacticAnalysis(lex("""
-        var x: Integer = 10        
+            x(f(z()))
     """))
+    
     
