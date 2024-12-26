@@ -1,4 +1,5 @@
 from collections import Dict
+from .typing import PPrintable
 from python import PythonObject
 
 alias TYPE_UNDERTERMINED = 'tp_undeter'
@@ -80,5 +81,22 @@ struct Tracker:
         ...
 
 @value
-struct Shader():
-    ...
+struct TrackerPairs(PPrintable):
+    var trackers: List[Tracker]
+
+    fn __init__(inout self):
+        self.trackers =  List[Tracker]()
+    
+
+    fn storeTracker(inout self, tracker: Tracker):
+        self.trackers.append(tracker)
+
+    fn getTrackerAt(inout self, index: Int) -> Tracker:
+        return self.trackers[index]
+
+    fn __getitem__(inout self, idx: Int) -> Tracker:
+        return self.getTrackerAt(idx)
+        ...
+
+    fn repr(inout self) -> String:
+        return 'TrackerPairs(n_trackers=' + str(len(self.trackers)) + ')'

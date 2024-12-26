@@ -59,6 +59,6 @@ fn main() raises:
         
     """)
     var tks = LexicalSyntacticAnalyser(prgm)
-    
-    pprint(ShaderBind(tks, prgm)[0])
+    var trackers = ShaderBind(tks, prgm)
+    pprint(trackers)
     

@@ -1,6 +1,6 @@
 from python import Python, PythonObject
 from . import ProgramSource
-from .libutils import Tracker, TYPE_UNDERTERMINED
+from .libutils import Tracker, TYPE_UNDERTERMINED, TrackerPairs
 from .libutils import log, LOG_MODE_INFO, LOG_MODE_TRACKER
 
 fn __shader_bind_call_check(
@@ -106,10 +106,11 @@ fn _shader_bind_checks(
     vertex_fn: String,
     fragment_fn: String,
     prgm: ProgramSource,
-) raises -> Tuple[Tracker, Tracker]:
+) raises -> TrackerPairs:
     var main_tracker = Tracker()
     var fragment_tracker = Tracker() # Seperate trackers for each shader
     var vertex_tracker = Tracker() # Seperate trackers for each shader
+    var pair = TrackerPairs()
 
     for token in prs_result:
         if token["type"] == "CONSTRUCT" and token["name"] == "supposedef":
@@ -151,13 +152,15 @@ fn _shader_bind_checks(
                 vertex_tracker = targetTracker.copyTo(vertex_tracker)
 
             continue
-        
-    return Tuple(vertex_tracker, fragment_tracker)
+    pair.storeTracker(vertex_tracker)
+    pair.storeTracker(fragment_tracker)
+    return pair
 
 
 fn ShaderBind(
     prs_result: PythonObject, prgm: ProgramSource
-) raises -> Tuple[Tracker, Tracker]:
+) raises -> TrackerPairs:
+    log('----Binding Shaders----', LOG_MODE_INFO)
     var shader_a = prs_result[0]
     var shader_b = prs_result[1]
     var vertex_fn: PythonObject = ""
@@ -181,5 +184,7 @@ fn ShaderBind(
         fragment_fn = shader_a["arg1"]
 
     # This function breaks the transpilation process
-    var trackers = _shader_bind_checks(prs_result, str(vertex_fn), str(fragment_fn), prgm)
-    return Tuple(trackers[0], trackers[1])
+    var pair = _shader_bind_checks(prs_result, str(vertex_fn), str(fragment_fn), prgm)
+    log('----Successfully bound shaders----', LOG_MODE_INFO)
+    print('')
+    return pair
