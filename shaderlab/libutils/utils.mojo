@@ -1,5 +1,6 @@
-from . import ShaderOperation
+# from . import ShaderOperation
 from python import PythonObject
+from .typing import PPrintable
 
 fn btos(boolean: Bool) -> String:
     if boolean:
@@ -22,11 +23,3 @@ fn errorToString(error: Error) raises -> Tuple[Int, String]:
         raise error
         # return (0, a)
     ...
-
-fn array_to_ptr(lst: List[ShaderOperation]) -> List[UnsafePointer[ShaderOperation]]:
-    var list = List[UnsafePointer[ShaderOperation]]()
-    for item in lst:
-        var pointer: UnsafePointer[ShaderOperation] = UnsafePointer[ShaderOperation](item)
-        list.append(pointer)
-
-    return list

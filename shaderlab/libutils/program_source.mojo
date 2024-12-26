@@ -2,6 +2,7 @@
     TODO: Implement transpiler errors in mojo
 """
 from shaderlab import repeatStr
+from shaderlab.config import *
 
 struct ProgramSource:
     
@@ -11,7 +12,7 @@ struct ProgramSource:
 
     fn __init__(inout self, shader:String) raises:
         self.shader = shader.strip()
-        self.shaderSourceArray = shader.strip().split("\n")
+        self.shaderSourceArray = str(shader.strip()).split("\n")
         self.programDidError = False
 
     fn __copyinit__(inout self, existing: Self):
@@ -31,7 +32,8 @@ struct ProgramSource:
         if (self.shaderSourceArray[line + 1]):
             string += '\t|' + str(line + 2) + "|" + self.shaderSourceArray[line + 1] + "\n"
         print("\x1b[31mTranspilation Failed, Line: " + str(line + 1) + ":\n" + string + "\nWith Error: \n\t╰→ " + errorMsg + "\x1b[0m")
-        raise Error('Exiting Transpiler due to above error.')
+        if ERROR_MODE != 'compiler':
+            raise Error('Exiting Transpiler due to above error.')
         ...
 
     def warn(self:ProgramSource,  line:Int, errorMsg:String) -> None:
@@ -45,4 +47,9 @@ struct ProgramSource:
         if (self.shaderSourceArray[line + 1]):
             string += '\t|' + str(line + 2) + "|" + self.shaderSourceArray[line + 1] + "\n"
         print("\x1b[33mTranspilation Raised Warning, Line: " + str(line + 1) + ":\n" + string + "\nWith Warning: \n\t╰→ " + errorMsg + "\x1b[0m")
+        ...
+
+    def endProgram(inout self):
+        if self.programDidError and ERROR_MODE == 'compiler':
+            raise Error("Transpilation Failed due to the above errors.")
         ...

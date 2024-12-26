@@ -1,7 +1,7 @@
 from python import Python, PythonObject
 from . import ProgramSource
-from .libutils import Tracker
-
+from .libutils import Tracker, TYPE_UNDERTERMINED
+from .libutils import log, LOG_MODE_INFO, LOG_MODE_TRACKER
 
 fn __shader_bind_call_check(
     token: PythonObject, owned tracker: Tracker
@@ -39,7 +39,8 @@ fn __shader_bind_fn_contents_check(
     prgm: ProgramSource,
     vertex_fn: String,
     fragment_fn: String,
-) raises:
+) raises -> List[String]:
+    var tracked: List[String] = List[String]();
     if token["type"] == "CallExpression":
         var res = __shader_bind_call_check(token, tracker)
         if not res:
@@ -51,9 +52,12 @@ fn __shader_bind_fn_contents_check(
                 + "'",
             )
         for subtkn in token["args"]:
-            __shader_bind_fn_contents_check(
+            internally_tracked = __shader_bind_fn_contents_check(
                 subtkn, tracker, prgm, vertex_fn, fragment_fn
             )
+            tracked.extend(internally_tracked)
+        tracked.append(str(token['name']))
+        
 
     if token["type"] == "IdentifierRef":
         # Found a variable, let's see if it has been tracked
@@ -67,6 +71,7 @@ fn __shader_bind_fn_contents_check(
                 + str(token["name"])
                 + "'",
             )
+        tracked.append(str(token['name']))
 
     if token["type"] == "VariableDeclaration":
         # Nevermind, the found function wasn't the main function, You should still track it though...
@@ -83,13 +88,17 @@ fn __shader_bind_fn_contents_check(
                     + str(token["vartype"])
                     + "'",
                 )
+            tracked.append(str(var_value['name']))
+            
             tracker.addTracker("VARIABLE", str(token["name"]), dtype)
             for subtkn in var_value["args"]:
-                __shader_bind_fn_contents_check(
+                var interally_tracked = __shader_bind_fn_contents_check(
                     subtkn, tracker, prgm, vertex_fn, fragment_fn
                 )
+                tracked.extend(interally_tracked)
         else:
-            tracker.addTracker("VARIABLE", str(token["name"]), "nxqt")
+            tracker.addTracker("VARIABLE", str(token["name"]), TYPE_UNDERTERMINED)
+    return tracked
 
 
 fn _shader_bind_checks(
@@ -97,32 +106,58 @@ fn _shader_bind_checks(
     vertex_fn: String,
     fragment_fn: String,
     prgm: ProgramSource,
-) raises:
+) raises -> Tuple[Tracker, Tracker]:
     var main_tracker = Tracker()
+    var fragment_tracker = Tracker() # Seperate trackers for each shader
+    var vertex_tracker = Tracker() # Seperate trackers for each shader
 
     for token in prs_result:
         if token["type"] == "CONSTRUCT" and token["name"] == "supposedef":
             main_tracker.addTracker(
-                str(token["arg0"]), str(token["arg1"]), "nxqt"
+                str(token["arg0"]), str(token["arg1"]), TYPE_UNDERTERMINED
             )
             continue
             ...
 
         if token["type"] == "FunctionDeclaration":
+            var targetTracker: Tracker = Tracker();
             main_tracker.addTracker(
                 "FUNCTION", str(token["name"]), str(token["dtype"])
             )
-            # You found the shader's main function, keep it in mind....
+            log('Copying tracked elements to temp tracker', LOG_MODE_TRACKER)
+            targetTracker = main_tracker.copyTo(targetTracker)
+                
+            var tracked: List[String] = List[String]();
             for subtkn in token["body"]:
-                __shader_bind_fn_contents_check(
+                var internally_tracked = __shader_bind_fn_contents_check(
                     subtkn, main_tracker, prgm, vertex_fn, fragment_fn
                 )
+                tracked.extend(internally_tracked)
                 ...
+            for tr in targetTracker.trackers:
+                if (tr[] not in tracked) or tr[] == fragment_fn or tr[] == vertex_fn:
+                    var terminatee = tr[]
+                    log('Removed unbound tracker \"' + terminatee + "\"", LOG_MODE_DELETION)
+                    targetTracker.removeTracker(terminatee)
+                    
+
+            if str(token["name"]) == fragment_fn:
+                log('Copying tracked elements to fragment tracker', LOG_MODE_TRACKER)
+                fragment_tracker = targetTracker.copyTo(fragment_tracker)
+
+            if str(token["name"]) == vertex_fn:
+                log('Copying tracked elements to vertex tracker', LOG_MODE_TRACKER)
+
+                vertex_tracker = targetTracker.copyTo(vertex_tracker)
+
+            continue
+        
+    return Tuple(vertex_tracker, fragment_tracker)
 
 
 fn ShaderBind(
     prs_result: PythonObject, prgm: ProgramSource
-) raises -> Tuple[String, String]:
+) raises -> Tuple[Tracker, Tracker]:
     var shader_a = prs_result[0]
     var shader_b = prs_result[1]
     var vertex_fn: PythonObject = ""
@@ -146,6 +181,5 @@ fn ShaderBind(
         fragment_fn = shader_a["arg1"]
 
     # This function breaks the transpilation process
-    _shader_bind_checks(prs_result, str(vertex_fn), str(fragment_fn), prgm)
-
-    return Tuple[String, String](str(vertex_fn), str(fragment_fn))
+    var trackers = _shader_bind_checks(prs_result, str(vertex_fn), str(fragment_fn), prgm)
+    return Tuple(trackers[0], trackers[1])

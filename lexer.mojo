@@ -44,21 +44,21 @@ fn LexicalSyntacticAnalyser(Program: ProgramSource,) raises -> PythonObject:
 
 fn main() raises:
     var prgm = ProgramSource("""
-        @Shaderbind VERTEX main
-        @Shaderbind FRAGMENT main
+        @Shaderbind VERTEX vertex
+        @Shaderbind FRAGMENT fragment
 
-        fn v(): float32 {
-            # Implementation excluded due to size
+        fn phong(): void {
         }
 
+        fn vertex(): Vector4 {
+            phong()
+        }
 
-        fn main(): ShaderOutput {
-            
-            var x:float32 = v(z())  
+        fn fragment(): ShaderOutput {
         }
         
     """)
     var tks = LexicalSyntacticAnalyser(prgm)
-    ShaderBind(tks, prgm)
-    # var structura = libglsl_gen(tks, False, prgm)
-    # print(structura.getStructure())
+    
+    pprint(ShaderBind(tks, prgm)[0])
+    
