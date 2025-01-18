@@ -1,5 +1,6 @@
 # Unified Shader Language (USL)
 
+
 **USL** is a high-performance shader transpiler written in the Mojo programming language, designed to unify various shader languages into a single cohesive language. With USL, developers can write shaders in a standardized language and deploy them seamlessly across multiple platforms and graphics engines. The primary goal is to facilitate a smooth transition from WebGL to WebGPU.
 
 ## Features
@@ -18,6 +19,10 @@ While USL aims to provide a seamless experience, there are some areas that may r
 * **Experimental Features**: Certain advanced features are still experimental and may not be fully stable.
 * **Platform-Specific Bugs**: Some platform-specific issues may arise, especially during the transition from WebGL to WebGPU.
 * **Performance Overheads**: While USL is optimized for speed, some complex shaders may introduce performance overheads during translation.
+
+## USL Official Networks
+
+- [Discord](https://discord.gg/y7EHns3upe)
 
 ## Sample Shader
 
@@ -54,6 +59,7 @@ fn my_fragment_shader() {
 @Shaderlib FRAGMENT my_fragment_shader
 
 ```
+
 GLSL:
 
 ```c
@@ -69,7 +75,7 @@ mat4 create_matrix(int size) {
 void main() {
     // shader logic
     mat4 matrix = create_matrix(4);
-    
+  
     // Typical vertex shader operations (e.g., transforming positions)
     gl_Position = matrix * vec4(0.0, 0.0, 0.0, 1.0); // Example operation
 }
@@ -89,7 +95,7 @@ vec4 Color4DHex(int hex) {
 void main() {
     // shader logic
     vec4 color = Color4DHex(0xFFFFFF);
-    
+  
     // Assign the color to the output
     gl_FragColor = color; // Example operation
 }

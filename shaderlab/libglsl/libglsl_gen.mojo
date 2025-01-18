@@ -1,8 +1,9 @@
 from .. import ProgramSource, USLVariableChunk, USLShaderChunk, USLFunctionChunk
 from python import PythonObject
 from .glsl_typing import *
+from ..libutils.tracker import TrackerPairs
 
-fn libglsl_gen(tokens: PythonObject, is_nested:Bool, prgm: ProgramSource) raises -> USLShaderChunk:
+fn libglsl_gen(tokens: PythonObject, prgm: ProgramSource, trackers:TrackerPairs) raises -> USLShaderChunk:
 
     var program = USLShaderChunk()
     program.nullify() # Prevent the afterCompileSafety from causing issues if the function has no body

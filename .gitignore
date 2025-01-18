@@ -4,4 +4,4 @@
 *.egg-info
 # magic environments
 .magic
-.DS_Store
+/.DS_Store
